@@ -1,6 +1,6 @@
 import django_filters as filters
 
-from recipes.models import Recipe, Tag
+from recipes.models import Ingredient, Recipe, Tag
 
 
 class RecipeFilter(filters.FilterSet):
@@ -29,3 +29,11 @@ class RecipeFilter(filters.FilterSet):
         if self.request.user.is_authenticated and value:
             return queryset.filter(in_favorites__user=self.request.user)
         return queryset
+
+
+class IngredientFilter(filters.FilterSet):
+    name = filters.CharFilter(lookup_expr='istarstwith')
+
+    class Meta:
+        model = Ingredient
+        fields = ('name',)
