@@ -4,30 +4,32 @@ volumes:
     pg_data:
     static:
     media:
+    redoc:
 
 services:
 
-  frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
-    volumes:
-      - ../frontend/:/app/result_build/
-
   db:
     image: postgres:13
-    env_file: ../.env
+    env_file: ./.env
     volumes:
       - pg_data:/var/lib/postgresql/data
+    restart: always
+
+  frontend:
+    image: dantee28/foodgram_frontend
+    volumes:
+      - ./frontend/:/app/result_build/
 
   backend:
-    build: ../backend/
-    env_file: ../.env
+    image: dantee28/foodgram_backend
+    env_file: ./.env
     depends_on:
       - db
     volumes:
       - static:/app/collected_static/
       - media:/app/media/
+      - redoc:/app/docs/
+    restart: always
   
   nginx:
     image: nginx:1.19.3
@@ -35,9 +37,10 @@ services:
       - "8000:80"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - ../frontend/build:/usr/share/nginx/html/
-      - ../docs/:/usr/share/nginx/html/api/docs/
+      - ./frontend/build:/usr/share/nginx/html/
+      - redoc:/usr/share/nginx/html/api/docs/
       - static:/etc/nginx/html/static/
       - media:/etc/nginx/html/media/
     depends_on:
       - backend
+    restart: always
