@@ -86,7 +86,7 @@ class IngredientRecipe(models.Model):
         Recipe,
         on_delete=models.CASCADE,
         verbose_name='Рецепт'
-        )
+    )
     amount = models.IntegerField(verbose_name='Количество')
 
     def __str__(self):
