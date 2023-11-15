@@ -10,7 +10,7 @@ from api.serializers import (FavoritesSerializer, IngredientSerializer,
                              RecipeSerializer, ShoppingCartSerializer,
                              TagSerializer)
 from recipes.models import Favorites, Ingredient, Recipe, ShoppingCart, Tag
-from services.utils import download_csv_cart
+from services.utils import download_txt_cart
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -152,5 +152,5 @@ class RecipeViewSet(viewsets.ModelViewSet):
         user = self.request.user
         if user.shopping_cart.exists():
             cart = user.shopping_cart.all()
-            return download_csv_cart(cart)
+            return download_txt_cart(cart)
         return Response('Список пуст.', status=status.HTTP_400_BAD_REQUEST)
