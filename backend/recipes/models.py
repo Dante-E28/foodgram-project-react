@@ -2,17 +2,22 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
 
+from recipes.constants import (MAX_INGREDIENT_NAME_LENGTH,
+                               MAX_MEASUREMENT_UNIT_LENGTH,
+                               MAX_RECIPE_NAME_LENGTH, MAX_TAG_COLOR_LENGTH,
+                               MAX_TAG_NAME_LENGTH, MIN_COOKING_TIME)
+
 User = get_user_model()
 
 
 class Ingredient(models.Model):
     name = models.CharField(
         'Название ингредиента',
-        max_length=200
+        max_length=MAX_INGREDIENT_NAME_LENGTH
     )
     measurement_unit = models.CharField(
         'Единицы измерения',
-        max_length=10
+        max_length=MAX_MEASUREMENT_UNIT_LENGTH
     )
 
     def __str__(self):
@@ -22,15 +27,15 @@ class Ingredient(models.Model):
 class Tag(models.Model):
     name = models.CharField(
         'Название тэга',
-        max_length=200,
+        max_length=MAX_TAG_NAME_LENGTH,
         unique=True
     )
     color = models.CharField(
         'Цвет',
-        max_length=7,
+        max_length=MAX_TAG_COLOR_LENGTH,
         unique=True
     )
-    slug = models.SlugField(max_length=200, unique=True)
+    slug = models.SlugField(max_length=MAX_TAG_NAME_LENGTH, unique=True)
 
     def __str__(self):
         return self.name
@@ -45,7 +50,7 @@ class Recipe(models.Model):
     )
     name = models.CharField(
         'Название рецепта',
-        max_length=200
+        max_length=MAX_RECIPE_NAME_LENGTH
     )
     image = models.ImageField(
         'Изображение',
@@ -69,7 +74,7 @@ class Recipe(models.Model):
     )
     cooking_time = models.PositiveSmallIntegerField(
         "Время готовки",
-        validators=[MinValueValidator(1)]
+        validators=[MinValueValidator(MIN_COOKING_TIME)]
     )
 
     class Meta:
@@ -90,7 +95,7 @@ class IngredientRecipe(models.Model):
         on_delete=models.CASCADE,
         verbose_name='Рецепт'
     )
-    amount = models.IntegerField(verbose_name='Количество')
+    amount = models.PositiveSmallIntegerField(verbose_name='Количество')
 
     def __str__(self):
         return f'{self.recipe} - {self.ingredient} - {self.amount}'

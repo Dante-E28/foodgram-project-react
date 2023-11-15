@@ -1,22 +1,11 @@
-import base64
-
-from django.core.files.base import ContentFile
 from django.db.models import F
 from rest_framework import serializers
 
+from api.fields import Base64ImageField
 from recipes.models import (Favorites, Ingredient, IngredientRecipe, Recipe,
                             ShoppingCart, Tag)
 from services.validators import ingredients_validator, tags_validator
 from users.serializers import UserSerializer
-
-
-class Base64ImageField(serializers.ImageField):
-    def to_internal_value(self, data):
-        if isinstance(data, str) and data.startswith('data:image'):
-            format, imgstr = data.split(';base64,')
-            ext = format.split('/')[-1]
-            data = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
-        return super().to_internal_value(data)
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -35,7 +24,6 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
         queryset=Ingredient.objects.all(),
     )
-    amount = serializers.IntegerField()
 
     class Meta:
         model = IngredientRecipe

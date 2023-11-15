@@ -1,5 +1,4 @@
 from django.db.models import Sum
-from django.db.models.functions import Coalesce
 from django.http import HttpResponse
 
 
@@ -10,8 +9,9 @@ def download_txt_cart(carts):
 
     ingredients_total = carts.values(
         'recipe__ingredients__name',
-        'recipe__ingredients__measurement_unit').annotate(
-        total_amount=Coalesce(Sum('recipe__ingredientrecipe__amount'), 0)
+        'recipe__ingredients__measurement_unit'
+    ).annotate(
+        total_amount=Sum('recipe__ingredientrecipe__amount')
     ).order_by('recipe__ingredients__name')
 
     for ingredient in ingredients_total:
