@@ -10,7 +10,7 @@ def ingredients_validator(ingredients):
     ing_list = []
 
     for ingredient in ingredients:
-        if not Ingredient.objects.filter(id=ingredient['id']).exists():
+        if not Ingredient.objects.filter(id=ingredient['id'].id).exists():
             raise ValidationError('Такого ингредиента нет в базе.')
 
         if ingredient in ing_list:
@@ -28,7 +28,7 @@ def tags_validator(tags):
     tags_list = []
 
     for tag in tags:
-        if not Tag.objects.filter(id=tag).exists():
+        if not Tag.objects.filter(id=tag.id).exists():
             raise ValidationError('Такого тэга нет в базе.')
 
         if tag in tags_list:
