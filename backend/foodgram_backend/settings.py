@@ -1,18 +1,16 @@
 import os
 
-from dotenv import load_dotenv
+from decouple import config
 
-dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
-load_dotenv(dotenv_path)
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-SECRET_KEY = os.getenv('SECRET_KEY', 'gdsfa')
+SECRET_KEY = config('SECRET_KEY')
 
-DEBUG = os.getenv('DEBUG', 'True').lower == 'true'
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
+ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="*")
 
 INSTALLED_APPS = [
     'django.contrib.admin',
