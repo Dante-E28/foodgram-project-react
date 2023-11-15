@@ -30,7 +30,7 @@ class UserViewSet(viewsets.ModelViewSet):
         permission_classes=[IsAuthenticated]
     )
     def me(self, request):
-        user = get_object_or_404(User, username=self.request.user)
+        user = self.request.user
         serializer = UserSerializer(user, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -44,15 +44,14 @@ class UserViewSet(viewsets.ModelViewSet):
             data=request.data,
             context={'request': request}
         )
-        if serializer.is_valid(raise_exception=True):
-            user = request.user
-            user.set_password(serializer.data.get('new_password'))
-            user.save()
-            return Response(
-                'Пароль успешно изменен',
-                status=status.HTTP_204_NO_CONTENT
-            )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        user = request.user
+        user.set_password(serializer.data.get('new_password'))
+        user.save()
+        return Response(
+            'Пароль успешно изменен',
+            status=status.HTTP_204_NO_CONTENT
+        )
 
     @action(
         methods=['post', 'delete'],
@@ -79,17 +78,9 @@ class UserViewSet(viewsets.ModelViewSet):
                 data=request.data,
                 context={'request': request}
             )
-            if serializer.is_valid(raise_exception=True):
-                serializer.save(user=user, author=author)
-                return Response(
-                    serializer.data,
-                    status=status.HTTP_201_CREATED
-                )
-
-            return Response(
-                serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save(user=user, author=author)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         if Subscribe.objects.filter(author=author, user=user).exists():
             Subscribe.objects.filter(author=author, user=user).first().delete()
