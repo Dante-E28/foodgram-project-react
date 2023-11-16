@@ -149,10 +149,9 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         for ingredient in ingredients:
             amount = ingredient['amount']
             ingredient_id = ingredient['id'].id
-            ingredient = Ingredient.objects.get(pk=ingredient_id)
             ingredients_list.append(
                 IngredientRecipe(
-                    ingredient=ingredient,
+                    ingredient_id=ingredient_id,
                     recipe=recipe,
                     amount=amount
                 )

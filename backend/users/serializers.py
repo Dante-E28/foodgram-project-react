@@ -5,6 +5,7 @@ from rest_framework.validators import UniqueValidator
 
 import api.serializers
 from recipes.models import Recipe
+from services.utils import is_user_subscribed
 from users.models import Subscribe
 
 User = get_user_model()
@@ -27,9 +28,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_is_subscribed(self, obj):
         user = self.context.get('request').user
-        if user.is_anonymous or user == obj:
-            return False
-        return user.subscriber.filter(author=obj).exists()
+        return is_user_subscribed(user, obj)
 
 
 class UserPostSerializer(UserCreateSerializer):
@@ -75,11 +74,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
 
     def get_is_subscribed(self, obj):
         user = self.context.get('request').user
-        if not user.is_anonymous:
-            return Subscribe.objects.filter(
-                user=obj.user,
-                author=obj.author).exists()
-        return False
+        return is_user_subscribed(user, obj.author)
 
     def get_recipes_count(self, obj):
         return Recipe.objects.filter(author=obj.author).count()

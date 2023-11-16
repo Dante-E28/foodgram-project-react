@@ -22,3 +22,9 @@ def download_txt_cart(carts):
         )
 
     return response
+
+
+def is_user_subscribed(user, author):
+    if user.is_anonymous or user == author:
+        return False
+    return user.subscriber.filter(author=author).exists()
