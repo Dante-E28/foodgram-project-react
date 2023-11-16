@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated, SAFE_METHODS
 from rest_framework.response import Response
 
 from api.filters import IngredientFilter, RecipeFilter
+from api.paginations import CustomPagination
 from api.permissions import IsOwnerOrReadOnly
 from api.serializers import (FavoritesSerializer, IngredientSerializer,
                              RecipeReadSerializer, RecipeWriteSerializer,
@@ -16,13 +17,11 @@ from services.utils import download_txt_cart
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    pagination_class = None
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    pagination_class = None
     filter_backends = (DjangoFilterBackend,)
     filterset_class = IngredientFilter
 
@@ -33,6 +32,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
     permission_classes = (IsOwnerOrReadOnly,)
+    pagination_class = CustomPagination
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
